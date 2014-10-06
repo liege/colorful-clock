@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>canvas点阵时钟</title>
+	<script src='digit.js'></script>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+	<script>
+	
+		var canvas = document.getElementById('canvas');
+		var h = window.innerHeight-100;
+		var w = window.innerWidth-100;
+		canvas.width = w;
+		canvas.height = h;
+		var endTime = new Date(2014,9,6,22,00,00).getTime();;
+		var r = 5; //半径	
+		var context = canvas.getContext('2d');	
+		var balls = [];
+		var timeChange = getTimeStr();
+		window.onload = function(){
+
+			if(endTime<new Date().getTime()){document.write('倒计时结束,请重设时间');return;}
+			run();
+			setInterval(function(){
+				run();
+			},1000/24);
+		}
+		function getTimeStr(next){
+			next = next?next:0;
+			var nowTime = new Date().getTime();
+			var interval = (endTime - nowTime-next)/1000;
+			var h = parseInt(interval/3600);
+			var m = parseInt((interval/3600 - h)*60);
+			var s = parseInt(((interval/3600 - h)*60-m)*60)
+
+
+			h = h.toString().length==1?("0"+h):h;
+			m = m.toString().length==1?("0"+m):m;
+			s = s.toString().length==1?("0"+s):s;
+			return h+':'+m+':'+s;			
+		}
+
+		function run(){
+			var timeStr = getTimeStr();
+			var nextTimeStr = getTimeStr(1000);
+			// console.log(timeStr);
+			// console.log(nextTimeStr);
+			
+
+			context.clearRect(0,0,w,h);
+			// console.log(timeStr+'----'+timeChange);
+			for(var i=0,j=0;i<timeStr.length;i++){
+				j++;
+				if (timeStr.substr(i,1)==":"){
+					drawDigit(i*(r*2+2)*7+r*2.5,30,context,10);
+				}else{
+					drawDigit(i*(r*2+2)*7,30,context,timeStr.substr(i,1));
+				}
+
+				if(timeStr[i]!=nextTimeStr[i]&&timeChange!=timeStr){  //发生变化的位数
+					addBalls(i*(r*2+2)*7,30,timeStr.substr(i,1));	//将要绘制的球添加进balls,记录每个球的位置						
+					if(j==timeStr.length){
+						timeChange = timeStr;
+					}
+				}
+			}
+
+			renderBall(context);
+
+		}
+		function drawDigit(x,y,context,num){
+			num*=1;
+			digit[num].forEach(function(v,i){ //一行
+				v.forEach(function(vv,j){ //单个元素
+					if(vv){ //如果有值（1）
+						context.beginPath();
+						context.arc(x+j*(r*2+1)+r*2,y+i*(r*2+1)+r*2,r,0,2*Math.PI);
+						context.fillStyle = "#0066ff"
+						context.fill();
+						context.closePath();
+					}else{
+						// 预留
+					}
+				})
+			});
+		}
+		function addBalls(x,y,num){
+			num*=1;
+			digit[num].forEach(function(v,i){ //一行
+				v.forEach(function(vv,j){ //单个元素
+					if(vv){ //如果有值（1）
+						var aBall = {
+							x:x+j*(r*2+1)+r*2,
+							y:y+i*(r*2+1)+r*2,
+							g:5.5*Math.random(),
+							vx:Math.pow(-1,Math.ceil(Math.random()*1000))*2,
+							vy:-5,	
+							color:['#ff9900','#f9f9f9','#ff0099','#f93333','#0099ff','#990066','#009900','#f231f9',,'#031230','#f23000']
+						}
+						balls.push(aBall);
+
+					}else{
+						// 预留
+					}
+				})
+			});
+
+		}	
+		function renderBall(context){
+			balls.forEach(function(v,i){
+				v.x += v.vx;
+				v.y += v.vy;
+				v.vy += v.g;					
+				if(v.y>h-r){
+					v.y = h - r;
+					v.vy = -v.vy*0.45;
+				}				
+				context.beginPath();
+				context.arc(v.x,v.y,r,0,2*Math.PI);
+				context.fillStyle = v.color[Math.round(Math.random()*10)];
+				context.fill();
+				context.closePath();
+			});				
+		}
+	</script>
+</body>
+</html>
