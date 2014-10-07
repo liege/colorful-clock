@@ -18,6 +18,7 @@
 		var r = 5; //半径	
 		var context = canvas.getContext('2d');	
 		var balls = [];
+		var colors = ["#33B5E5","#0099CC","#AA66CC","#9933CC","#99CC00","#669900","#FFBB33","#FF8800","#FF4444","#CC0000"];
 		var timeChange = getTimeStr();
 		window.onload = function(){
 
@@ -25,6 +26,7 @@
 			run();
 			setInterval(function(){
 				run();
+				// console.log(balls.length)
 			},1000/24);
 		}
 		function getTimeStr(next){
@@ -77,7 +79,7 @@
 					if(vv){ //如果有值（1）
 						context.beginPath();
 						context.arc(x+j*(r*2+1)+r*2,y+i*(r*2+1)+r*2,r,0,2*Math.PI);
-						context.fillStyle = "#0066ff"
+						context.fillStyle = colors[num];
 						context.fill();
 						context.closePath();
 					}else{
@@ -97,7 +99,7 @@
 							g:5.5*Math.random(),
 							vx:Math.pow(-1,Math.ceil(Math.random()*1000))*2,
 							vy:-5,	
-							color:['#ff9900','#f9f9f9','#ff0099','#f93333','#0099ff','#990066','#009900','#f231f9',,'#031230','#f23000']
+							color:colors
 						}
 						balls.push(aBall);
 
@@ -116,7 +118,10 @@
 				if(v.y>h-r){
 					v.y = h - r;
 					v.vy = -v.vy*0.45;
-				}				
+				}	
+				if (v.x <0+r||v.x>w+r){
+					balls.splice(i,1);
+				};			
 				context.beginPath();
 				context.arc(v.x,v.y,r,0,2*Math.PI);
 				context.fillStyle = v.color[Math.round(Math.random()*10)];
