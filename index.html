@@ -50,10 +50,8 @@
 			// console.log(timeStr);
 			// console.log(nextTimeStr);
 			
-
 			context.clearRect(0,0,w,h);
-			// console.log(timeStr+'----'+timeChange);
-			for(var i=0,j=0;i<timeStr.length;i++){
+			for(var i=j=0;i<timeStr.length;i++){
 				j++;
 				if (timeStr.substr(i,1)==":"){
 					drawDigit(i*(r*2+2)*7+r*2.5,30,context,10);
